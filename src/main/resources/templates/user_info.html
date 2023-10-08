@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!--width=device-width - это, чтобы работали адаптивные версии на всех мобильных устройствах, т.е. ширина по девайсу-->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!--  Подключаем стили (CSS) Бутстрапа
+  rel (от relationship) – это атрибут, описывающий тег href-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+        integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+
+
+  <link rel="shortcut icon" href="https://start.spring.io/images/icon-48x48.png">
+
+  <title>User page</title>
+  <style>
+
+    .bs .row > .col, .bs .row > [class^="col-"]{
+      padding-top: .75rem;
+      padding-bottom: .30rem;
+      /*background-color: darkslategray;*/
+      /*border: 1px solid darkslategray;*/
+      /*color: #fff;*/
+    }
+  </style>
+</head>
+<body>
+
+<!--СОЗДАЕМ ШАПКУ-->
+<header>
+  <div class="bs">
+    <div class="container-fluid bg-dark text-white my-4">
+      <div class="row">
+        <div class="col-lg-11 me-auto" id="userInfo">
+          <!-- JS-script-->
+        </div>
+        <div class="col-lg-1 ms-auto">
+          <form th:action="@{/logout}" th:method="POST">
+            <button type="submit" class="btn btn-outline-success bg-dark text-white">Logout</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</header>
+
+<div1 class="d-flex align-items-start">
+  <!--Создаем кнопку слева для получения информации о юзере-->
+  <div2 class="col-2">
+    <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+      <button class="nav-link active" id="v-pills-user-tab" data-bs-toggle="pill" data-bs-target="#v-pills-user" type="button" role="tab" aria-controls="v-pills-user" aria-selected="true">User</button>
+    </div>
+  </div2>
+
+
+  <!--Создаем таблицу которая отображает информацию о авторизованном юзере в роли USER-->
+
+  <div3 class="container-fluid">
+    <div class="p-3 border bg-light">
+      <div4 class="col-12">
+
+        <div5 class="tab-content" id="v-pills-tabContent">
+          <div class="tab-pane fade show active" id="v-pills-user" role="tabpanel"
+               aria-labelledby="v-pills-user-tab">
+            <!--                    Таблица отображающая информацию о юзере-->
+            <p class="fw-bold fs-1"><h5><b>User Information</b></h5></p>
+            <div11  class="p-0 border bg-highlight ">
+
+              <h5><b>About User</b></h5>
+
+            <table class="table table-success table-striped my-3">
+              <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">FirstName</th>
+                <th scope="col">LastName</th>
+                <th scope="col">Age</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+              </tr>
+              </thead>
+              <tbody id="tableUser">
+              <!-- JS-script-->
+              </tbody>
+            </table>
+            </div11>
+          </div>
+        </div5>
+
+      </div4>
+    </div>
+  </div3>
+
+</div1>
+
+
+<script>
+  const URLUserInfo = ("http://localhost:8080/api/user");
+  const FormTableUser = document.getElementById('tableUser');
+  const InfoUser = document.getElementById('userInfo');
+
+//метод отображающий данные юзера в таблице
+  function getUserInfo(){
+    fetch(URLUserInfo)
+            .then(r=>r.json())
+            .then((userInfo) => {
+              let rolesUser = getRolesUser(userInfo.roles);
+              let data = '';
+
+              data += `
+            <tr>
+            <td>${userInfo.id}</td>
+            <td>${userInfo.name}</td>
+            <td>${userInfo.surname}</td>
+            <td>${userInfo.age}</td>
+            <td>${userInfo.email}</td>
+            <td>${rolesUser}</td>
+            </tr>`;
+
+              FormTableUser.innerHTML = data;
+              InfoUser.innerHTML = `<h5>
+            <span>${userInfo.email} </span>
+            <span> with roles: </span>
+            <span>${rolesUser}</span>
+                                  </h5>`;
+            });
+  }
+  getUserInfo()
+//метод обрабатывающий наименование роли перед передачей на представление
+  function getRolesUser(roles){
+    let rolesList = "";
+    for (let role of roles){
+      rolesList += (role.name.toString().replace('ROLE_','')+', ');
+    }
+    rolesList = rolesList.substring(0,rolesList.length-2);
+    return rolesList;
+  }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
